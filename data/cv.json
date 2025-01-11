@@ -1,0 +1,179 @@
+{
+    "contact": {
+      "email": "ahlamyusuff623@gmail.com",
+      "linkedin": "www.linkedin.com/in/ahlamyusuf",
+      "personal": "calendly.com/ahlamyusuf"
+    },
+    "top_skills": [
+      "Machine Learning",
+      "Data Analysis",
+      "Deep Learning",
+      "Problem resolution",
+      "Statistical Data Analysis",
+      "Prophet",
+      "ARIMA",
+      "Python",
+      "SQL"
+    ],
+    "languages": {
+      "English": "Native",
+      "Swahili": "Native",
+      "Arabic": "Native",
+      "German": "Elementary"
+    },
+    "certifications": [
+      "Pandas",
+      "Emotional Intelligence & Political Intelligence Webinar",
+      "IC3 Digital Literacy Certification",
+      "Interview Skills Webinar",
+      "Scrum"
+    ],
+    "honors_awards": [
+      "Member of the Student Council",
+      "World Summit AI Qatar Ambassador",
+      "Awarded full-ride scholarship by PDO to attain her Masters in Data Science",
+      "Awarded full-ride scholarship by the ministry of education to attain her Bachelors in Computer Science"
+    ],
+    "research_projects": [
+    "Automatic License Plate Reader",
+    "Dynamic Traffic Lights for Cognitive Cities (Computer Vision Research)"
+  ],
+    "summary": "With an MSc in Data Science from HARBOUR.SPACE and a foundation in Computer Science from the German University of Technology in Oman, my journey has led me to Omantel as a Business Support System Engineer. Here, my team and I ensure IT BSS UI applications run smoothly, leveraging my SQL expertise for data analysis that enhances system performance. Previously at PhazeRo, we crafted predictive models and harnessed machine learning algorithms for time series analysis, improving forecasting accuracy. Proficient in OCR and NLP, we transformed unstructured data into actionable insights, fostering informed decision-making across the organization.",
+    "experience": [
+      {
+        "company": "Omantel",
+        "position": "Business Support System Engineer (Data Engineer)",
+        "dates": {
+            "start": "May 2023",
+            "end": "Present"
+        },
+        "location": "Muscat, Masqaţ, Oman",
+        "achievements": [
+          "Orchestrated the seamless and efficient operation of all IT BSS UI applications, following standard operational procedures.", 
+          "Proactively restored incidents impacting or degrading services through applications, minimizing downtime, and maintaining peak application services availability.", 
+          "Collaborated closely with managed service and partner teams to swiftly address and resolve issues, contributing to a robust and resilient IT infrastructure.", 
+          "Leveraged SQL proficiency for in-depth data analysis, extracting valuable insights to enhance system performance and optimize processes.", 
+          "Applied expertise in OpenShift for efficient deployment and management of applications, ensuring scalability and flexibility.", 
+          "Utilized Big Data tools for comprehensive analysis, providing strategic recommendations based on data-driven insights.", 
+          "Implemented CI/CD pipelines, streamlining the development and deployment process for enhanced agility and reliability.", 
+          "Provided team leads with regular updates, showcasing analytical thinking, logical problem-solving, and transparent communication." 
+        ],
+        "skills": [
+          "IT Operations Management", 
+          "Incident Response and Resolution", 
+          "Application Services Availability", 
+          "Collaboration with Managed Service Teams", 
+          "SQL for Data Analysis", 
+          "OpenShift Deployment and Management", 
+          "Big Data Analysis", 
+          "PL/SQL", 
+          "API Development", 
+          "CI/CD Pipeline Implementation", 
+          "Analytical Thinking", 
+          "Logical Problem Solving", 
+          "Transparent Communication", 
+          "Operational Procedure Adherence" 
+        ]
+      },
+      {
+        "company": "tipl.io",
+        "position": "Engineer",
+        "dates": {
+            "start": "November 2022",
+            "end": "Present"
+        },
+        "responsibilities": [
+          "Model Development: Crafting, fine-tuning, and deploying ML models, particularly focusing on Support Vector Machines (SVM) and Computer Vision algorithms, to tackle diverse business challenges effectively.",
+           "Data Preprocessing: Collaborating with data engineers and domain experts to ensure pristine data quality and integrity using Pandas and NumPy, laying a solid foundation for model training.",          
+            "Feature Engineering: Identifying key features and optimizing them to enhance model performance and predictive accuracy, leveraging my expertise in Pandas and NumPy.", 
+            "Model Training and Evaluation: Implementing SVM and other ML algorithms, meticulously evaluating model performance using Matplotlib for visualization, and iterating for continuous improvement.",
+            "Hyperparameter Tuning: Fine-tuning model hyperparameters using advanced techniques like grid search and Bayesian optimization for optimal performance, utilizing my expertise in Python.",
+            "Computer Vision: Applying cutting-edge Computer Vision techniques to extract meaningful insights from visual data, enhancing decision-making processes and automating tasks.", 
+            "Integration and Deployment: Collaborating with software engineers to seamlessly integrate ML models into production systems, leveraging my experience with Raspberry Pi and Arduino for IoT applications.",
+            "Continuous Monitoring and Maintenance: Implementing robust monitoring solutions to track model performance in real-time and addressing issues promptly for sustained effectiveness.",
+            "Stay Current with Industry Trends: Keeping abreast of the latest advancements in ML, Computer Vision, and related technologies to leverage the best solutions for organizational needs.",
+            "Collaboration and Communication: Working closely with cross-functional teams to understand requirements, communicate findings, and drive the adoption of ML and Computer Vision solutions." 
+           
+        ]
+      },
+      {
+        "company": "ZabonEx",
+        "position": "Data Scientist",
+        "dates": {
+        "start": "May 2023",
+        "end": "August 2023"
+      },
+        "responsibilities": [
+          "Translated business objectives into structured data science problems." ,
+         " Demonstrated expert proficiency in multivariate time series forecasting and causal forecasting." ,
+          "Conducted comprehensive data exploration and communicated insights effectively to both technical and non-technical stakeholders." ,
+          "Analyzed experimental results, iterated, and refined models to drive significant business impact.",
+          "Possessed in-depth understanding of classical statistical forecasting algorithms (e.g., ARIMA, ETS) and modern algorithms (e.g., Prophet)." ,
+          "Applied practical knowledge of sequence models in deep learning (e.g., LSTMs, Transformers) with a focus on time series forecasting." 
+          ]
+      },
+      {
+        "company": "PhazeRo",
+        "position": "Data Scientist",
+        "dates": {
+        "start": "November 2021",
+        "end": "July 2023 "
+      },
+        "responsibilities": [
+          "Crafted advanced predictive models and machine learning algorithms, utilizing state-of-the-art statistical techniques for precise insights.", 
+          "Specialized in time series analysis, enhancing forecasting accuracy and enabling informed decision-making.",
+          "Developed expertise in Optical Character Recognition (OCR), transforming unstructured data into valuable insights.", 
+          "Proficient in Natural Language Processing (NLP), extracting meaning and insights from textual data.",
+          "Incorporated CRNN (Convolutional Recurrent Neural Network) for robust text recognition, enhancing OCR capabilities with 90% text extraction accuracy.",
+          "Orchestrated seamless collaboration with cross-functional teams, partnering with project managers and business stakeholders to implement data-driven solutions for complex challenges.", 
+          "Proficient in deploying data science models using Docker, ensuring seamless integration and scalability across diverse environments.",
+          "Actively curated insightful content for the development of aspiring data scientists, fostering a culture of continuous learning and innovation.",
+          "Used BERT to achieve 85% accuracy in sentiment analysis and polysemy resolution."
+      
+        ]
+      },
+      {
+        "company": "Alizz Islamic Banking",
+        "position": "Data Analyst",
+        "dates": {
+        "start": "March 2021",
+        "end": "September 2021"
+      },
+        "responsibilities": [
+          "Spearheaded the successful extraction and transformation of complex data from diverse sources, optimizing processes for efficiency and accuracy." ,
+            "Conducted in-depth ad-hoc data analyses, uncovering patterns and trends that directly influenced strategic business decisions. ",
+            "Implemented a proactive quality assurance system, resulting in a notable 20% increase in data accuracy and reliability. ",
+            "Developed and maintained an innovative set of data models, reports, and dynamic dashboards, enhancing data visualization for clearer insights. ",
+            "Collaborated with cross-functional teams, translating business",
+            "Conduct data analysis to identify trends and insights using visualization tools (Tableau, Google Looker)",
+            "Wrangled and cleaned data from multiple sources using Excel functions(DAX,vlookup, index-match, Pivot Tables)"
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "HARBOUR.SPACE",
+        "degree": "Master's degree, Data Science",
+        "duration": "November 2021 - November 2022"
+      },
+      {
+        "institution": "German University of Technology in Oman",
+        "degree": "Bachelor of Science - BS, Computer Science",
+        "duration": "2017 - 2020"
+      },
+      {
+        "institution": "Azzan Bin Qais International School",
+        "degree": "High School Diploma",
+        "duration": "2012 - 2016"
+      }
+    ],
+    "passion": [
+      "About getting people into tech, especially in coding.",
+      "Solving real-life problems using technology."
+    ],
+    "perfect_work_environment":[
+      "an environment that helps people thrive",
+      "open to new ideas and technologies"
+    ]
+  }
+  
