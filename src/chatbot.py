@@ -10,11 +10,14 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-def handle_recruiter_questions(questions):
+def handle_recruiter_questions(questions, api_key):
   #load cv data
   cv_data = load_cv_data()
   if not cv_data:
       return "Error Could not load CV data."
+  
+  genai.configure(api_key=api_key)
+
   
   keywords = extract_keywords(questions)
 
@@ -36,9 +39,6 @@ def find_relevant_sections(keywords, cv_data):
   return relevant_sections
 
 def generate_answers_with_gemini(question,relevant_sections, cv_data):
-  gen_api = os.environ.get("GEMINI_API")
-  genai.configure(api_key=gen_api)
-
   prompt_template = """
   I have a question about a candidate's CV. 
   **Question:** {question}
@@ -71,8 +71,3 @@ def generate_answers_with_gemini(question,relevant_sections, cv_data):
 
   # 4. Return the answer
   return answer
-
-# Example usage
-question = "what is ahlam's prefered work environment"
-answer = handle_recruiter_questions(question) 
-print(answer) 

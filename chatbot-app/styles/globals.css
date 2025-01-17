@@ -1,0 +1,187 @@
+/* styles/globals.css */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #141414; /* Dark background */
+  color: #E5E7EB; /* Light gray text */
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.left-panel {
+  width: 340px;
+  padding: 20px;
+  background-color: #1F1F1F; /* Slightly lighter dark background */
+  border-right: 1px solid #374151; /* Dark gray border */
+}
+
+.left-panel h3 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #E5E7EB; /* Light gray text */
+}
+
+.left-panel input {
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #374151; /* Dark gray border */
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #141414; /* Dark background */
+  color: #E5E7EB; /* Light gray text */
+}
+
+.left-panel button {
+  width: 100%;
+  padding: 10px;
+  background-color: #3B82F6; /* Electric blue */
+  color: #FFFFFF; /* White text */
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.left-panel button:hover {
+  background-color: #2563EB; /* Darker blue on hover */
+}
+
+.chat-window {
+  flex: 1;
+  padding: 20px;
+  background-color: #141414; /* Dark background */
+  display: flex;
+  flex-direction: column;
+}
+
+/* styles/globals.css */
+.message-history {
+  flex: 1;
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin-bottom: 20px;
+  max-height: 400px; /* Set a fixed height for the chat container */
+}
+
+.message {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  max-width: 70%;
+}
+
+.message.user {
+  background-color: #3B82F6; /* Electric blue for user messages */
+  color: #FFFFFF; /* White text */
+  margin-left: auto; /* Align to the right */
+}
+
+.message.bot {
+  background-color: #374151; /* Dark gray for bot messages */
+  color: #E5E7EB; /* Light gray text */
+  margin-right: auto; /* Align to the left */
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #374151; /* Dark gray border */
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #1F1F1F; /* Slightly lighter dark background */
+  color: #E5E7EB; /* Light gray text */
+}
+
+.input-area button {
+  padding: 10px 20px;
+  background-color: #3B82F6; /* Electric blue */
+  color: #FFFFFF; /* White text */
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.input-area button:hover {
+  background-color: #2563EB; /* Darker blue on hover */
+}
+
+/* Sample questions section */
+.sample-questions {
+  margin-bottom: 20px;
+}
+
+.sample-questions h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #E5E7EB; /* Light gray text */
+}
+
+.questions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question {
+  padding: 10px;
+  background-color: #3B82F6; /* Electric blue */
+  color: #FFFFFF; /* White text */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.question:hover {
+  background-color: #2563EB; /* Darker blue on hover */
+}
+
+
+/* Add this to your CSS file */
+.toggle-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #3B82F6; /* Blue color for the button text */
+  font-size: 14px;
+}
+
+.toggle-button:hover {
+  text-decoration: underline;
+}
+
+/* Add this to your CSS file */
+.eye-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B7280; /* Gray color for the icon */
+  font-size: 16px;
+}
+
+.eye-button:hover {
+  color: #3B82F6; /* Blue color on hover */
+}
