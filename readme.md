@@ -10,7 +10,6 @@ This is a fun project that lets you have a conversation with my CV. Instead of s
 - React/Next.js for the pretty face ✨
 - Python/Flask for the heavy lifting 💪
 - A sprinkle of magic ✨
-
 ## Want to Try It Out? 🚀
 
 ### First Things First:
