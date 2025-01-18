@@ -10,7 +10,7 @@ def ask_question():
     data = request.json
     question = data.get('question')
     api_key = data.get('apiKey')
-    answer = handle_recruiter_questions(question)
+    answer = handle_recruiter_questions(questions=question, api_key=api_key)
     return jsonify({"answer": answer})
 
 if __name__ == '__main__':
