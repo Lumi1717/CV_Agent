@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from chatbot import handle_recruiter_questions
+from .chatbot import handle_recruiter_questions
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
