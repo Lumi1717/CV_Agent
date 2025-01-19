@@ -12,6 +12,3 @@ def ask_question():
     api_key = data.get('apiKey')
     answer = handle_recruiter_questions(questions=question, api_key=api_key)
     return jsonify({"answer": answer})
-
-if __name__ == '__main__':
-    app.run(port=5000, debug=False)
