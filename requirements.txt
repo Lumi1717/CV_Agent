@@ -53,7 +53,7 @@ mdurl==0.1.2
 multidict==6.1.0
 mypy-extensions==1.0.0
 narwhals==1.21.1
-numpy==2.2.1
+numpy==1.26.4
 openai==1.30.0
 orjson==3.10.13
 packaging==24.2
