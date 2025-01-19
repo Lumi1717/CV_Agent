@@ -3,7 +3,7 @@ import os
 import google.generativeai as genai
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from cv_data import load_cv_data
+from .cv_data import load_cv_data
 from dotenv import load_dotenv
 
 
