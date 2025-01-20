@@ -1,6 +1,7 @@
 // pages/api/ask.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -13,8 +14,12 @@ export default async function handler(
     }
 
     try {
+      if (!process.env.KOYEB_API) {
+        throw new Error('KOYEB_API environment variable is not defined');
+      }
+      
       // Call the Flask backend
-      const response = await fetch('http://127.0.0.1:5000/ask', {
+      const response = await fetch(process.env.KOYEB_API , {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

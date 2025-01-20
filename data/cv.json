@@ -175,8 +175,27 @@
       "an environment that helps people thrive",
       "open to new ideas and technologies"
     ],
-    "Coffe or Karak":
+    "coffe_or_karak":
     ["Simple answe karak",
-      "Deeper answer, the smell of spices and tea bring life into me"]
+      "Deeper answer, the smell of spices and tea bring life into me"],
+
+    "coding_languges":
+    ["Python for Model development","SQL for getting data", "R for statistical analyses and data visualization",
+    "React/JavaScript for front end", "Next.js for connectivity"],
+
+    "chatbot_description": {
+      "framework": "Built using React.js for the frontend and Next.js for API connectivity.",
+      "backend": "Flask backend for handling API requests and processing natural language queries.",
+      "machine_learning": "Incorporates machine learning models for personalized responses and dynamic interactions.",
+      "deployment": "Deployed on Koyeb.. a post is coming on this",
+      "technologies": [
+        "React.js",
+        "Next.js",
+        "Flask",  
+        "Python",
+        "Machine Learning",
+        "Koyeb"
+    ]
+  }
   }
   

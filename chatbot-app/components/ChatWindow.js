@@ -1,4 +1,8 @@
 import { useState, useRef, useEffect } from 'react'; // Add useRef and useEffect
+const koyeb_api = process.env.NEXT_PUBLIC_KOYEB_API
+
+console.log('NEXT_PUBLIC_KOYEB_API:', process.env.NEXT_PUBLIC_KOYEB_API);
+console.log('koyeb_api',koyeb_api)
 
 const ChatWindow = ({ apiKey }) => {
   const [input, setInput] = useState('');
@@ -7,9 +11,8 @@ const ChatWindow = ({ apiKey }) => {
 
   // Sample questions
   const sampleQuestions = [
-    'How many years of experience does Ahlam have?',
+    'How many years of total experience does Ahlam have?',
     'How many companies did Ahlam work for?',
-    'Where does Ahlam work right now?',
     'Coffee or Karak?',
   ];
 
@@ -31,7 +34,7 @@ const ChatWindow = ({ apiKey }) => {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/ask', {
+      const response = await fetch(koyeb_api, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
