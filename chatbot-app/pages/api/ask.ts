@@ -38,7 +38,7 @@ export default async function handler(
       let data;
       try {
         data = JSON.parse(text); // Try to parse it as JSON
-      } catch (e) {
+      } catch  {
         throw new Error(`Invalid JSON response from Flask backend: ${text}`);
       }
 
