@@ -41,7 +41,7 @@ const ChatWindow = ({ apiKey }) => {
       });
 
       const data = await response.json();
-      // const botMessage = { text: data.answer, sender: 'LamBot' };
+      const botMessage = { text: data.answer, sender: 'LamBot' };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error('Error fetching response:', error);
