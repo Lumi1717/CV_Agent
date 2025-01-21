@@ -43,7 +43,7 @@ const ApiInput = ({ onApiSubmit }) => {
         <button type="submit">Save API Key</button>
       </form>
       <p style={{ marginTop: '10px', fontSize: '14px', color: '#E5E7EB' }}>
-        Don't have an API key?{' '}
+        Don&apos;t have an API key?{' '}
         <a
           href="https://aistudio.google.com/apikey"
           target="_blank"
