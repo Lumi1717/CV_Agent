@@ -26,7 +26,7 @@ const ChatWindow = ({ apiKey }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!apiKey) {
-      alert('Please add an API key to continue.');
+      alert('Please add Gemini API key to continue.');
       return;
     }
 
@@ -43,11 +43,11 @@ const ChatWindow = ({ apiKey }) => {
       });
 
       const data = await response.json();
-      const botMessage = { text: data.answer, sender: 'bot' };
+      // const botMessage = { text: data.answer, sender: 'LamBot' };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error('Error fetching response:', error);
-      setMessages((prev) => [...prev, { text: 'Error: Unable to fetch response.', sender: 'bot' }]);
+      setMessages((prev) => [...prev, { text: 'Error: Unable to fetch response.', sender: 'LamBot' }]);
     }
 
     setInput('');
