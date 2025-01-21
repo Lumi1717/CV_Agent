@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react'; // Add useRef and useEffect
 const koyeb_api = process.env.NEXT_PUBLIC_KOYEB_API
 
-console.log('NEXT_PUBLIC_KOYEB_API:', process.env.NEXT_PUBLIC_KOYEB_API);
-console.log('koyeb_api',koyeb_api)
 
 const ChatWindow = ({ apiKey }) => {
   const [input, setInput] = useState('');
