@@ -13,7 +13,7 @@ const ApiInput = ({ onApiSubmit }) => {
 
   return (
     <div className="left-panel">
-      <h3>Enter Your API Key</h3>
+      <h3>Enter Your Gemini API Key</h3>
       <form onSubmit={handleSubmit}>
         <div style={{ position: 'relative', width: '100%' }}>
           <input
@@ -42,6 +42,18 @@ const ApiInput = ({ onApiSubmit }) => {
         </div>
         <button type="submit">Save API Key</button>
       </form>
+      <p style={{ marginTop: '10px', fontSize: '14px', color: '#E5E7EB' }}>
+        Don't have an API key?{' '}
+        <a
+          href="https://aistudio.google.com/apikey"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#3B82F6', textDecoration: 'none' }}
+        >
+          Get your Gemini API key here
+        </a>
+        .
+      </p>
     </div>
   );
 };
