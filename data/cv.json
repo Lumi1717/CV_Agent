@@ -183,6 +183,13 @@
     ["Python for Model development","SQL for getting data", "R for statistical analyses and data visualization",
     "React/JavaScript for front end", "Next.js for connectivity"],
 
+    "future":
+    ["using my power for good by helping us reach Kryptonian-level technology before its demise"],
+
+    "why_like_coding":
+    ["Being able to develop anything i think of", "being able to bring an idea into life", 
+    "working with my hands to create something"],
+
     "chatbot_description": {
       "framework": "Built using React.js for the frontend and Next.js for API connectivity.",
       "backend": "Flask backend for handling API requests and processing natural language queries.",
@@ -193,9 +200,10 @@
         "Next.js",
         "Flask",  
         "Python",
+        "NLP (Natural Language Processing)",
         "Machine Learning",
         "Koyeb"
-    ]
+    ], "github": "https://github.com/Lumi1717/CV_Agent/tree/main"
   }
-  }
+}
   
