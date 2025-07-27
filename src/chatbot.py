@@ -11,6 +11,96 @@ from datetime import datetime
 # Load environment variables from .env file
 load_dotenv()
 
+def calculate_total_experience(experience_list):
+    """
+    Calculate the total professional experience from a list of experience entries.
+    Assumes experience_list is a list of dictionaries, each with 'start_date' and 'end_date' keys.
+    'start_date' and 'end_date' are expected in 'YYYY-MM-DD' format.
+    If 'end_date' is 'Present', it uses the current date.
+    
+    Args:
+        experience_list (list): A list of dictionaries, each representing an experience entry.
+    
+    Returns:
+        str: A formatted string representing the total experience (e.g., "5 years and 3 months").
+    """
+    total_months = 0
+    
+    for job in experience_list:
+        start_date_str = job.get("start_date")
+        end_date_str = job.get("end_date")
+
+        if not start_date_str:
+            continue
+
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            
+            if end_date_str and end_date_str.lower() == "present":
+                end_date = datetime.now()
+            elif end_date_str:
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+            else:
+                continue # Skip if no end date and not 'Present'
+
+            # Calculate months difference
+            delta = end_date - start_date
+            months_diff = delta.days / 30.44 # Average days in a month
+            total_months += months_diff
+
+        except ValueError:
+            # Handle cases where date format might be incorrect
+            print(f"Warning: Could not parse date for job: {job}")
+            continue
+            
+    years = int(total_months // 12)
+    months = int(total_months % 12)
+
+    if years > 0 and months > 0:
+        return f"{years} years and {months} months"
+    elif years > 0:
+        return f"{years} years"
+    elif months > 0:
+        return f"{months} months"
+    else:
+        return "Less than a month of experience"
+
+def is_off_topic_question(question):
+    """
+    Determine if the question is off-topic.
+    
+    Args:
+        question (str): The input question.
+    
+    Returns:
+        bool: True if the question is off-topic, False otherwise.
+    """
+    off_topic_keywords = [
+        "code", "debug", "fix this", "solve this", "how to", 
+        "can you write", "write code", "programming", "troubleshoot",
+        "technical problem", "help me with", "instructions for", "guide me"
+    ]
+    
+    # Check if 'ahlam' is mentioned explicitly in the question.
+    # If it is, even if it contains an off-topic keyword, it might still be a CV-related question
+    # that happens to contain a problematic word (e.g., "What code did Ahlam work on?").
+    # However, given the strict instructions to avoid problem solving/code fixing,
+    # we'll still flag it as off-topic if it contains those keywords, even with "Ahlam."
+    
+    question_lower = question.lower()
+
+    if any(keyword in question_lower for keyword in off_topic_keywords):
+        return True
+    
+    # Check for general conversational greetings or non-CV related topics
+    general_off_topic_phrases = [
+        "how to solve this", "help me solve", "how do you", "what is the answer to"
+    ]
+    if any(phrase in question_lower for phrase in general_off_topic_phrases) and "ahlam" or "she" or "her" not in question_lower:
+        return True
+    
+    return False
+
 def handle_recruiter_questions(question, api_key):
     """
     Handle recruiter questions about the candidate's CV
