@@ -19,7 +19,8 @@
       "English": "Native",
       "Swahili": "Native",
       "Arabic": "Native",
-      "German": "Elementary"
+      "German": "Elementary",
+      "Spanish": "Elementary"
     },
     "certifications": [
       "Pandas",
@@ -203,7 +204,8 @@
         "NLP (Natural Language Processing)",
         "Machine Learning",
         "Koyeb"
-    ], "github": "https://github.com/Lumi1717/CV_Agent/tree/main"
+    ], "github": "https://github.com/Lumi1717/CV_Agent"
+
   }
 }
   

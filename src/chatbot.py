@@ -5,6 +5,8 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from .cv_data import load_cv_data
 from dotenv import load_dotenv
+from datetime import datetime
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,6 +23,8 @@ def handle_recruiter_questions(question, api_key):
         str: The answer to the question
     """
     try:
+        if is_off_topic_question(question):
+            return "I am designed to answer questions about Ahlam Yusuf's professional background and CV only. Please ask a question related to her experience, skills, or education."
         # Load CV data
         cv_data = load_cv_data()
         if not cv_data:
@@ -28,6 +32,11 @@ def handle_recruiter_questions(question, api_key):
         
         # Configure Gemini API
         genai.configure(api_key=api_key)
+
+        # Calculate total experience and add to CV data for context
+        total_experience_str = calculate_total_experience(cv_data.get("experience", []))
+        cv_data["total_experience_summary"] = total_experience_str
+
         
         # Extract keywords from the question
         keywords = extract_keywords(question)
@@ -89,6 +98,8 @@ def find_relevant_sections(keywords, cv_data):
         section_text = str(cv_data[section]).lower()
         if any(keyword in section_text for keyword in keywords):
             relevant_sections.append(section)
+
+    
     
     # If no specific sections found, return all sections for comprehensive answer
     if not relevant_sections:
@@ -114,16 +125,23 @@ def generate_answers_with_gemini(question, relevant_sections, cv_data):
         
         prompt_template = """
         You are an AI assistant helping to answer questions about Ahlam Yusuf's professional background and CV.
+
+        **Current Date for Reference:** {current_date}
+
         
         **Question:** {question}
-        
-        **Relevant CV Information:** {focused_data}
-        
-        **Full CV Context:** {cv_data}
+
+        **Relevant Sections from Ahlam's CV (Highly Prioritized):**
+        {focused_data}
+                
+        **Full CV Context (for broader understanding, but prioritize 'Relevant Sections'):**
+        {cv_data}
+
         
         **Instructions:**
         - Provide a concise, informative, and friendly answer based on the CV information
         - Keep your tone conversational and human-like, as if talking to a friend
+        - Use Gen Z slang to make it more friendly and approachable 
         - Only answer based on the information provided in the CV
         - If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
         - Focus on being helpful and accurate
@@ -134,26 +152,49 @@ def generate_answers_with_gemini(question, relevant_sections, cv_data):
         - For skills questions: "Ahlam's top skills include [specific skills from CV]..."
         - For experience questions: "At [Company], Ahlam worked as [position] where she [specific achievements]..."
         - For education questions: "Ahlam has a [degree] from [institution]..."
+
+         **Strict Instructions for Generating the Answer:**
+        1.  **Strict Adherence to CV:** Only use information explicitly present in the provided CV data. Do not make up information or infer details not stated.
+        2.  **No External Information:** Do not bring in any outside knowledge, facts, or assumptions.
+        3.  **No Problem Solving/Code Fixing:** If the question asks for debugging, code fixing, solving a technical problem, or providing instructions on how to do something, politely state that you are an AI focused on Ahlam's CV and cannot assist with that. Immediately steer the conversation back to CV-related topics.
+        4.  **No Conversational Diversions:** Do not engage in casual chat, personal opinions, or topics unrelated to professional recruitment and Ahlam's CV.
+        5.  **Concise and Informative:** Provide clear, direct, and factual answers. Avoid excessive verbosity.
+        6.  **Human-like & Professional Tone:** Maintain a professional, helpful, and friendly tone.
+        7.  **Handle Missing Information:** If the question asks for information that is *not* found in the CV, respond with a polite statement like: "I apologize, but Ahlam's CV does not contain information about [specific topic mentioned in question]."
+        8.  **Experience Calculation:** If asked about total experience, refer to the `total_experience_summary` provided in the `cv_data` for a pre-calculated answer. Do not attempt to recalculate it yourself.
+        9.  **Specific Examples:** When asked about skills, experience, or achievements, try to incorporate specific examples or bullet points from the CV where appropriate.
         
         Remember to keep responses relevant to the CV content only.
+
+
+        **Example of how to handle off-topic questions (e.g., code):**
+        "Wooooowww there buddy, thats out of my scope. lets focus on the main show AHLAM"
+
+        **Begin your answer now:**
         """
         
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+
+        # Get current date for the prompt context
+        current_date = datetime.now().strftime("%B %d, %Y")
+
         
         # Format the prompt with the actual data
         prompt_text = prompt_template.format(
             question=question,
             focused_data=json.dumps(focused_data, indent=2),
-            cv_data=json.dumps(cv_data, indent=2)
+            cv_data=json.dumps(cv_data, indent=2),
+            current_date=current_date
         )
         
         # Generate response
         response = model.generate_content(prompt_text)
         
         # Extract the generated text from the response
-        answer = response.text if response.text else "I'm sorry, I couldn't generate an answer to your question."
+        answer = response.text if response.text else "I'm sorry, I do not know what you're talking about buddy."
         
         return answer
         
     except Exception as e:
-        return f"Error generating answer: {str(e)}. Please try rephrasing your question."
+        return f"Opps 404 {str(e)}. Do you mind rephrasing that for me, i lost you there buddy."
