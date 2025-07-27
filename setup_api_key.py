@@ -5,6 +5,11 @@ Setup script for configuring the Gemini API key
 
 import os
 import sys
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 
 def setup_gemini_api_key():
     """Setup Gemini API key in the .env file"""

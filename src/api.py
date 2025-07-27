@@ -3,6 +3,14 @@ from flask_cors import CORS
 from .chatbot import handle_recruiter_questions
 import os
 from dotenv import load_dotenv
+from pathlib import Path  # Add this import
+
+
+# Load environment variables - specify the path to your .env file
+env_path = Path('.') / '.env'  # Looks for .env in current directory
+# OR specify an absolute path if needed:
+# env_path = '/Users/ahlamyusuf/Documents/Github/CV_Agent/.env'
+load_dotenv(dotenv_path=env_path)
 
 # Load environment variables
 load_dotenv()
@@ -15,7 +23,10 @@ def ask_question():
     try:
         # Check if Gemini API key is configured
         api_key = os.getenv('GEMINI_API_KEY')
-        if not api_key or api_key == 'your_gemini_api_key_here':
+        DEFAULT_PLACEHOLDER = "your-default-key-here" 
+        if not api_key or api_key == DEFAULT_PLACEHOLDER:
+            print('test',os.getenv('GEMINI_API_KEY'))
+            print('twow',api_key)
             return jsonify({
                 "error": "Gemini API key not configured. Please set GEMINI_API_KEY in your .env file."
             }), 500
