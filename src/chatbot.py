@@ -196,7 +196,8 @@ def generate_answers_with_gemini(question, relevant_sections, cv_data):
         **Instructions:**
         - Provide a concise, informative, and friendly answer based on the CV information
         - Keep your tone conversational and human-like, as if talking to a friend
-        - Use Gen Z slang to make it more friendly and approachable 
+        - Use a natural tone relevant to the topic and add a little gen z slang to make it more friendly and approachable
+        - Make it professional but with a jobe here and there
         - Only answer based on the information provided in the CV
         - If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
         - Focus on being helpful and accurate
