@@ -243,22 +243,11 @@ def generate_answers_with_gemini(question, relevant_sections, cv_data):
         - For experience questions: "At [Company], Ahlam worked as [position] where she [specific achievements]..."
         - For education questions: "Ahlam has a [degree] from [institution]..."
 
-         **Strict Instructions for Generating the Answer:**
-        1.  **Strict Adherence to CV:** Only use information explicitly present in the provided CV data. Do not make up information or infer details not stated.
-        2.  **No External Information:** Do not bring in any outside knowledge, facts, or assumptions.
-        3.  **No Problem Solving/Code Fixing:** If the question asks for debugging, code fixing, solving a technical problem, or providing instructions on how to do something, politely state that you are an AI focused on Ahlam's CV and cannot assist with that. Immediately steer the conversation back to CV-related topics.
-        4.  **No Conversational Diversions:** Do not engage in casual chat, personal opinions, or topics unrelated to professional recruitment and Ahlam's CV.
-        5.  **Concise and Informative:** Provide clear, direct, and factual answers. Avoid excessive verbosity.
-        6.  **Human-like & Professional Tone:** Maintain a professional, helpful, and friendly tone.
-        7.  **Handle Missing Information:** If the question asks for information that is *not* found in the CV, respond with a polite statement like: "I apologize, but Ahlam's CV does not contain information about [specific topic mentioned in question]."
-        8.  **Experience Calculation:** If asked about total experience, refer to the `total_experience_summary` provided in the `cv_data` for a pre-calculated answer. Do not attempt to recalculate it yourself.
-        9.  **Specific Examples:** When asked about skills, experience, or achievements, try to incorporate specific examples or bullet points from the CV where appropriate.
-        
-        Remember to keep responses relevant to the CV content only.
+        Remember to keep responses relevant to the CV content only no code assistance.
 
 
         **Example of how to handle off-topic questions (e.g., code):**
-        "Wooooowww there buddy, thats out of my scope. lets focus on the main show AHLAM"
+        "Wooooowww there buddy, thats out of my scope. lets focus on the main show."
 
         **Begin your answer now:**
         """
