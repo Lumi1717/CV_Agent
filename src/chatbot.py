@@ -217,6 +217,11 @@ def generate_answers_with_gemini(question, relevant_sections, cv_data):
 
         **Begin your answer now:**
         """
+
+
+        # Calculate total experience and add to CV data for context
+        total_experience_str = calculate_total_experience(cv_data.get("experience", []))
+        cv_data["total_experience_summary"] = total_experience_str
         
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
