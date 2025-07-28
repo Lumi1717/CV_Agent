@@ -65,41 +65,6 @@ def calculate_total_experience(experience_list):
     else:
         return "Less than a month of experience"
 
-def is_off_topic_question(question):
-    """
-    Determine if the question is off-topic.
-    
-    Args:
-        question (str): The input question.
-    
-    Returns:
-        bool: True if the question is off-topic, False otherwise.
-    """
-    off_topic_keywords = [
-        "code", "debug", "fix this", "solve this", "how to", 
-        "can you write", "write code", "programming", "troubleshoot",
-        "technical problem", "help me with", "instructions for", "guide me"
-    ]
-    
-    # Check if 'ahlam' is mentioned explicitly in the question.
-    # If it is, even if it contains an off-topic keyword, it might still be a CV-related question
-    # that happens to contain a problematic word (e.g., "What code did Ahlam work on?").
-    # However, given the strict instructions to avoid problem solving/code fixing,
-    # we'll still flag it as off-topic if it contains those keywords, even with "Ahlam."
-    
-    question_lower = question.lower()
-
-    if any(keyword in question_lower for keyword in off_topic_keywords):
-        return True
-    
-    # Check for general conversational greetings or non-CV related topics
-    general_off_topic_phrases = [
-        "how to solve this", "help me solve", "how do you", "what is the answer to"
-    ]
-    if any(phrase in question_lower for phrase in general_off_topic_phrases) and "ahlam" or "she" or "her" not in question_lower:
-        return True
-    
-    return False
 
 def handle_recruiter_questions(question, api_key):
     """
@@ -113,8 +78,6 @@ def handle_recruiter_questions(question, api_key):
         str: The answer to the question
     """
     try:
-        if is_off_topic_question(question):
-            return "I am designed to answer questions about Ahlam Yusuf's professional background and CV only. Please ask a question related to her experience, skills, or education."
         # Load CV data
         cv_data = load_cv_data()
         if not cv_data:
@@ -196,6 +159,8 @@ def find_relevant_sections(keywords, cv_data):
         relevant_sections = list(cv_data.keys())
     
     return relevant_sections
+
+
 
 def generate_answers_with_gemini(question, relevant_sections, cv_data):
     """
