@@ -185,20 +185,93 @@ def _create_vector_store(cv_data, api_key):
     # Add total experience summary
     total_experience_str = calculate_total_experience(cv_data.get("experience", []))
     cv_data["total_experience_summary"] = total_experience_str
+
+    # Extract current employment information
+    current_jobs = []
+    experience_list = cv_data.get("experience", [])
+    
+    for job in experience_list:
+        dates_obj = job.get("dates", {})
+        end_date_str = dates_obj.get("end") if dates_obj else job.get("end_date")
+        
+        # Check if this is a current job (ends with "Present")
+        if end_date_str and end_date_str.lower() == "present":
+            company = job.get("company", "")
+            position = job.get("position", "")
+            start_date = dates_obj.get("start") if dates_obj else job.get("start_date", "")
+            
+            current_jobs.append({
+                "company": company,
+                "position": position,
+                "start_date": start_date,
+                "end_date": "Present"
+            })
+    
+    # Create a dedicated current employment document
+    if current_jobs:
+        current_employment_text = "CURRENT EMPLOYMENT:\n\n"
+        for job in current_jobs:
+            current_employment_text += f"Company: {job['company']}\n"
+            current_employment_text += f"Position: {job['position']}\n"
+            current_employment_text += f"Period: {job['start_date']} to Present\n\n"
+        
+        doc = Document(
+            page_content=current_employment_text,
+            metadata={"section": "current_employment", "is_current": True}
+        )
+        documents.append(doc)
     
     # Create documents from each section
     for section, content in cv_data.items():
-        if isinstance(content, (dict, list)):
+        # For experience section, create separate documents for each job
+        if section == "experience" and isinstance(content, list):
+            for idx, job in enumerate(content):
+                job_text = f"WORK EXPERIENCE - Job #{idx + 1}:\n"
+                job_text += f"Company: {job.get('company', 'N/A')}\n"
+                job_text += f"Position: {job.get('position', 'N/A')}\n"
+                
+                dates_obj = job.get("dates", {})
+                start_date = dates_obj.get("start") if dates_obj else job.get("start_date", "N/A")
+                end_date = dates_obj.get("end") if dates_obj else job.get("end_date", "N/A")
+                
+                job_text += f"Period: {start_date} to {end_date}\n"
+                job_text += f"Location: {job.get('location', 'N/A')}\n\n"
+                
+                if job.get("achievements"):
+                    job_text += "Achievements:\n"
+                    for achievement in job.get("achievements", []):
+                        job_text += f"- {achievement}\n"
+                
+                if job.get("responsibilities"):
+                    job_text += "\nResponsibilities:\n"
+                    for resp in job.get("responsibilities", []):
+                        job_text += f"- {resp}\n"
+                
+                if job.get("skills"):
+                    job_text += "\nSkills:\n"
+                    for skill in job.get("skills", []):
+                        job_text += f"- {skill}\n"
+                
+                is_current = (end_date and end_date.lower() == "present")
+                doc = Document(
+                    page_content=job_text,
+                    metadata={"section": "experience", "company": job.get("company", ""), "is_current": is_current}
+                )
+                documents.append(doc)
+        elif isinstance(content, (dict, list)):
             content_str = json.dumps(content, indent=2)
+            doc = Document(
+                page_content=f"Section: {section}\n{content_str}",
+                metadata={"section": section}
+            )
+            documents.append(doc)
         else:
             content_str = str(content)
-        
-        # Create a document with section name as metadata
-        doc = Document(
-            page_content=f"Section: {section}\n{content_str}",
-            metadata={"section": section}
-        )
-        documents.append(doc)
+            doc = Document(
+                page_content=f"Section: {section}\n{content_str}",
+                metadata={"section": section}
+            )
+            documents.append(doc)
     
     # Use Google Generative AI embeddings
     embeddings = GoogleGenerativeAIEmbeddings(
@@ -258,27 +331,33 @@ def handle_recruiter_questions(question, api_key):
         # Get current date
         current_date = datetime.now().strftime("%B %d, %Y")
         
-        # Create retriever - get more chunks for better context
-        retriever = vector_store.as_retriever(search_kwargs={"k": 5})
+        # Create retriever - get more chunks for better context, with metadata filter if needed
+        retriever = vector_store.as_retriever(search_kwargs={"k": 7})
         
         # Create prompt template (combining everything in one prompt since Gemini doesn't support system messages)
         prompt_template = """You are an AI assistant helping to answer questions about Ahlam Yusuf's professional background and CV.
 
 **Current Date for Reference:** {current_date}
 
-**Instructions:**
-- Provide a concise, informative, and friendly answer based on the CV information
-- Keep your tone conversational and human-like, as if talking to a friend
-- Use a natural tone relevant to the topic and add a little gen z slang to make it more friendly and approachable
+**IMPORTANT INSTRUCTIONS FOR CURRENT EMPLOYMENT QUESTIONS:**
+- When asked about "where is she working now", "current employment", "where does she work", or similar questions:
+  - Look for entries marked as "CURRENT EMPLOYMENT" or jobs with "Present" in the dates
+  - The CV information below contains current employment details - find them and list all current positions
+  - If you see "end": "Present" or "Period: X to Present", that means it's a current position
+  - List ALL current companies and positions - someone can work at multiple places simultaneously
+
+**General Instructions:**
+        - Provide a concise, informative, and friendly answer based on the CV information
+        - Keep your tone conversational and human-like, as if talking to a friend
+        - Use a natural tone relevant to the topic and add a little gen z slang to make it more friendly and approachable
 - Make it professional but with a joke here and there
-- Only answer based on the information provided in the CV
-- If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
-- Focus on being helpful and accurate
-- Use specific details from the CV when possible
-- When asked about current employment or "where is she working now", look for positions with "Present" or "end": "Present" in the dates
+        - Only answer based on the information provided in the CV
+        - If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
+        - Focus on being helpful and accurate
+        - Use specific details from the CV when possible
 - Be specific about company names, positions, and dates when available
 
-**Example of how to handle off-topic questions (e.g., code):**
+        **Example of how to handle off-topic questions (e.g., code):**
 "Wooooowww there buddy, that's out of my scope. Let's focus on the main show."
 
 **Question:** {question}
@@ -286,9 +365,9 @@ def handle_recruiter_questions(question, api_key):
 **Relevant CV Information:**
 {context}
 
-**Begin your answer now:**
-"""
-        
+        **Begin your answer now:**
+        """
+
         prompt = PromptTemplate(
             template=prompt_template,
             input_variables=["question", "context", "current_date"]
