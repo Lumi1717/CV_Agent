@@ -16,10 +16,7 @@ grpcio==1.73.1
 grpcio-status==1.62.3
 protobuf==4.25.8
 proto-plus==1.26.1
-faiss-cpu==1.7.4
+faiss-cpu>=1.9.0
 sentence-transformers>=5.1.2
 huggingface-hub>=0.20.0
-faiss-cpu==1.7.4
 requests==2.31.0
-
-python-dotenv ==1.0.0
