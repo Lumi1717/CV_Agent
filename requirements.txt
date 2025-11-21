@@ -8,15 +8,9 @@ langchain-text-splitters==0.0.1
 langchain-google-genai==0.0.11
 langsmith==0.1.147
 google-generativeai==0.4.1
-google-ai-generativelanguage==0.4.0
 google-api-core==2.25.1
 google-auth==2.40.3
-googleapis-common-protos==1.70.0
-grpcio==1.73.1
-grpcio-status==1.62.3
 protobuf==4.25.8
-proto-plus==1.26.1
 faiss-cpu>=1.9.0
-sentence-transformers>=5.1.2
-huggingface-hub>=0.20.0
+sentence-transformers
 requests==2.31.0

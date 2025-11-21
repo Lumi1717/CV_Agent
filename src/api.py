@@ -6,14 +6,9 @@ from dotenv import load_dotenv
 from pathlib import Path  # Add this import
 
 
-# Load environment variables - specify the path to your .env file
 env_path = Path('.') / '.env'  # Looks for .env in current directory
-# OR specify an absolute path if needed:
-# env_path = '/Users/ahlamyusuf/Documents/Github/CV_Agent/.env'
 load_dotenv(dotenv_path=env_path)
 
-# Load environment variables
-load_dotenv()
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -65,6 +60,9 @@ def health_check():
         "status": "healthy",
         "message": "CV RAG API is running"
     })
+@app.route('/')
+def home():
+    return jsonify({"message": "CV Agent API is running. Go to /ask to ask questions about Ahlam's CV", "status": "healthy"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
