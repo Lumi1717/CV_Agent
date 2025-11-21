@@ -1,15 +1,20 @@
 import json
 import os
-import google.generativeai as genai
-from langchain.chains import LLMChain
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
+from langchain.schema import Document
 from .cv_data import load_cv_data
 from dotenv import load_dotenv
 from datetime import datetime
 
 
-# Load environment variables from .env file
 load_dotenv()
+
+# Global vector store (initialized once)
+_vector_store = None
 
 def calculate_total_experience(experience_list):
     """
@@ -66,9 +71,69 @@ def calculate_total_experience(experience_list):
         return "Less than a month of experience"
 
 
+def _create_vector_store(cv_data):
+    """
+    Create a FAISS vector store from CV data
+    
+    Args:
+        cv_data (dict): The CV data dictionary
+    
+    Returns:
+        FAISS: Vector store instance
+    """
+    # Convert CV data into documents
+    documents = []
+    
+    # Add total experience summary
+    total_experience_str = calculate_total_experience(cv_data.get("experience", []))
+    cv_data["total_experience_summary"] = total_experience_str
+    
+    # Create documents from each section
+    for section, content in cv_data.items():
+        if isinstance(content, (dict, list)):
+            content_str = json.dumps(content, indent=2)
+        else:
+            content_str = str(content)
+        
+        # Create a document with section name as metadata
+        doc = Document(
+            page_content=f"Section: {section}\n{content_str}",
+            metadata={"section": section}
+        )
+        documents.append(doc)
+    
+    # Use a lightweight embedding model
+    embeddings = HuggingFaceEmbeddings(
+        model_name="all-MiniLM-L6-v2"  # Small, fast model
+    )
+    
+    # Create FAISS vector store
+    vector_store = FAISS.from_documents(documents, embeddings)
+    
+    return vector_store
+
+
+def _get_or_create_vector_store():
+    """
+    Get or create the global vector store (singleton pattern)
+    
+    Returns:
+        FAISS: Vector store instance
+    """
+    global _vector_store
+    
+    if _vector_store is None:
+        cv_data = load_cv_data()
+        if not cv_data:
+            raise ValueError("Could not load CV data")
+        _vector_store = _create_vector_store(cv_data)
+    
+    return _vector_store
+
+
 def handle_recruiter_questions(question, api_key):
     """
-    Handle recruiter questions about the candidate's CV
+    Handle recruiter questions about the candidate's CV using LangChain and vector search
     
     Args:
         question (str): The question to answer
@@ -78,173 +143,73 @@ def handle_recruiter_questions(question, api_key):
         str: The answer to the question
     """
     try:
-        # Load CV data
-        cv_data = load_cv_data()
-        if not cv_data:
-            return "Error: Could not load CV data. Please check if the CV file exists."
+        # Get or create vector store
+        vector_store = _get_or_create_vector_store()
         
-        # Configure Gemini API
-        genai.configure(api_key=api_key)
-
-        # Calculate total experience and add to CV data for context
-        total_experience_str = calculate_total_experience(cv_data.get("experience", []))
-        cv_data["total_experience_summary"] = total_experience_str
-
-        
-        # Extract keywords from the question
-        keywords = extract_keywords(question)
-        
-        # Find relevant sections based on keywords
-        relevant_sections = find_relevant_sections(keywords, cv_data)
-        
-        # Generate answer using Gemini
-        answer = generate_answers_with_gemini(
-            question=question, 
-            relevant_sections=relevant_sections, 
-            cv_data=cv_data
+        # Initialize Gemini LLM
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            google_api_key=api_key,
+            temperature=0.7
         )
         
-        return answer
-        
-    except Exception as e:
-        return f"Error processing your question: {str(e)}"
-
-def extract_keywords(question):
-    """
-    Extract keywords from the question for relevance matching
-    
-    Args:
-        question (str): The input question
-    
-    Returns:
-        list: List of keywords
-    """
-    if not question:
-        return []
-    
-    # Convert to lowercase and split into words
-    keywords = question.lower().split()
-    
-    # Filter out common stop words
-    stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'what', 'when', 'where', 'how', 'why', 'who'}
-    keywords = [word for word in keywords if word not in stop_words and len(word) > 2]
-    
-    return keywords
-
-def find_relevant_sections(keywords, cv_data):
-    """
-    Find CV sections that are relevant to the keywords
-    
-    Args:
-        keywords (list): List of keywords from the question
-        cv_data (dict): The CV data
-    
-    Returns:
-        list: List of relevant section names
-    """
-    relevant_sections = []
-    
-    if not keywords or not cv_data:
-        return list(cv_data.keys()) if cv_data else []
-    
-    for section in cv_data:
-        section_text = str(cv_data[section]).lower()
-        if any(keyword in section_text for keyword in keywords):
-            relevant_sections.append(section)
-
-    
-    
-    # If no specific sections found, return all sections for comprehensive answer
-    if not relevant_sections:
-        relevant_sections = list(cv_data.keys())
-    
-    return relevant_sections
-
-
-
-def generate_answers_with_gemini(question, relevant_sections, cv_data):
-    """
-    Generate answers using Gemini AI based on the question and relevant CV sections
-    
-    Args:
-        question (str): The question to answer
-        relevant_sections (list): List of relevant CV sections
-        cv_data (dict): The complete CV data
-    
-    Returns:
-        str: Generated answer
-    """
-    try:
-        # Create focused data for relevant sections
-        focused_data = {section: cv_data[section] for section in relevant_sections if section in cv_data}
-        
-        prompt_template = """
-        You are an AI assistant helping to answer questions about Ahlam Yusuf's professional background and CV.
-
-        **Current Date for Reference:** {current_date}
-
-        
-        **Question:** {question}
-
-        **Relevant Sections from Ahlam's CV (Highly Prioritized):**
-        {focused_data}
-                
-        **Full CV Context (for broader understanding, but prioritize 'Relevant Sections'):**
-        {cv_data}
-
-        
-        **Instructions:**
-        - Provide a concise, informative, and friendly answer based on the CV information
-        - Keep your tone conversational and human-like, as if talking to a friend
-        - Use a natural tone relevant to the topic and add a little gen z slang to make it more friendly and approachable
-        - Make it professional but with a jobe here and there
-        - Only answer based on the information provided in the CV
-        - If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
-        - Focus on being helpful and accurate
-        - Use specific details from the CV when possible
-        - If asked about skills, experience, education, etc., provide concrete examples
-        
-        **Example Response Style:**
-        - For skills questions: "Ahlam's top skills include [specific skills from CV]..."
-        - For experience questions: "At [Company], Ahlam worked as [position] where she [specific achievements]..."
-        - For education questions: "Ahlam has a [degree] from [institution]..."
-
-        Remember to keep responses relevant to the CV content only no code assistance.
-
-
-        **Example of how to handle off-topic questions (e.g., code):**
-        "Wooooowww there buddy, thats out of my scope. lets focus on the main show."
-
-        **Begin your answer now:**
-        """
-
-
-        # Calculate total experience and add to CV data for context
-        total_experience_str = calculate_total_experience(cv_data.get("experience", []))
-        cv_data["total_experience_summary"] = total_experience_str
-        
-        model = genai.GenerativeModel("gemini-1.5-pro-latest")
-
-
-        # Get current date for the prompt context
+        # Get current date
         current_date = datetime.now().strftime("%B %d, %Y")
-
         
-        # Format the prompt with the actual data
-        prompt_text = prompt_template.format(
-            question=question,
-            focused_data=json.dumps(focused_data, indent=2),
-            cv_data=json.dumps(cv_data, indent=2),
-            current_date=current_date
+        # Create custom prompt with current_date included
+        prompt_template = """You are an AI assistant helping to answer questions about Ahlam Yusuf's professional background and CV.
+
+**Current Date for Reference:** {current_date}
+
+**Question:** {question}
+
+**Relevant CV Information:**
+{context}
+
+**Instructions:**
+- Provide a concise, informative, and friendly answer based on the CV information
+- Keep your tone conversational and human-like, as if talking to a friend
+- Use a natural tone relevant to the topic and add a little gen z slang to make it more friendly and approachable
+- Make it professional but with a joke here and there
+- Only answer based on the information provided in the CV
+- If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
+- Focus on being helpful and accurate
+- Use specific details from the CV when possible
+
+**Example of how to handle off-topic questions (e.g., code):**
+"Wooooowww there buddy, that's out of my scope. Let's focus on the main show."
+
+**Begin your answer now:**
+"""
+        
+        # Format prompt with current_date
+        formatted_prompt_template = prompt_template.format(
+            current_date=current_date,
+            question="{question}",
+            context="{context}"
         )
         
-        # Generate response
-        response = model.generate_content(prompt_text)
+        prompt = PromptTemplate(
+            template=formatted_prompt_template,
+            input_variables=["question", "context"]
+        )
         
-        # Extract the generated text from the response
-        answer = response.text if response.text else "I'm sorry, I do not know what you're talking about buddy."
+        # Create retrieval chain
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=llm,
+            chain_type="stuff",
+            retriever=vector_store.as_retriever(search_kwargs={"k": 3}),  # Get top 3 relevant chunks
+            chain_type_kwargs={"prompt": prompt},
+            return_source_documents=False
+        )
+        
+        # Generate answer
+        result = qa_chain.invoke({"query": question})
+        
+        answer = result.get("result", "I'm sorry, I do not know what you're talking about buddy.")
         
         return answer
         
     except Exception as e:
-        return f"Opps 404 {str(e)}. Do you mind rephrasing that for me, i lost you there buddy."
+        return f"Oops 404 {str(e)}. Do you mind rephrasing that for me, I lost you there buddy."
+
