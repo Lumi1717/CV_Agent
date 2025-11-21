@@ -4,13 +4,10 @@ gunicorn==21.2.0
 python-dotenv==1.0.0
 langchain-community==0.0.38
 langchain-core==0.1.53
-langchain-text-splitters==0.0.1
 langchain-google-genai==0.0.11
-langsmith==0.1.147
 google-generativeai==0.4.1
 google-api-core==2.25.1
 google-auth==2.40.3
 protobuf==4.25.8
 faiss-cpu>=1.9.0
-sentence-transformers
 requests==2.31.0

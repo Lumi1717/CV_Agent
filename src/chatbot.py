@@ -1,7 +1,6 @@
 import json
 import os
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
@@ -103,9 +102,7 @@ def _create_vector_store(cv_data):
         documents.append(doc)
     
     # Use a lightweight embedding model
-    embeddings = HuggingFaceEmbeddings(
-        model_name="all-MiniLM-L6-v2"  # Small, fast model
-    )
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     # Create FAISS vector store
     vector_store = FAISS.from_documents(documents, embeddings)
