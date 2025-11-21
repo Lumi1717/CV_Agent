@@ -1,11 +1,12 @@
 import json
 import os
 from langchain_community.vectorstores import FAISS
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains import RetrievalQA
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain.prompts import PromptTemplate
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.schema import Document
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage
 from .cv_data import load_cv_data
 from dotenv import load_dotenv
 from datetime import datetime
@@ -71,12 +72,13 @@ def calculate_total_experience(experience_list):
         return "Less than a month of experience"
 
 
-def _create_vector_store(cv_data):
+def _create_vector_store(cv_data, api_key):
     """
     Create a FAISS vector store from CV data
     
     Args:
         cv_data (dict): The CV data dictionary
+        api_key (str): Google API key for embeddings
     
     Returns:
         FAISS: Vector store instance
@@ -102,8 +104,11 @@ def _create_vector_store(cv_data):
         )
         documents.append(doc)
     
-    # Use a lightweight embedding model
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    # Use Google Generative AI embeddings
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        google_api_key=api_key
+    )
     
     # Create FAISS vector store
     vector_store = FAISS.from_documents(documents, embeddings)
@@ -111,9 +116,12 @@ def _create_vector_store(cv_data):
     return vector_store
 
 
-def _get_or_create_vector_store():
+def _get_or_create_vector_store(api_key):
     """
     Get or create the global vector store (singleton pattern)
+    
+    Args:
+        api_key (str): Google API key for embeddings
     
     Returns:
         FAISS: Vector store instance
@@ -124,7 +132,7 @@ def _get_or_create_vector_store():
         cv_data = load_cv_data()
         if not cv_data:
             raise ValueError("Could not load CV data")
-        _vector_store = _create_vector_store(cv_data)
+        _vector_store = _create_vector_store(cv_data, api_key)
     
     return _vector_store
 
@@ -142,7 +150,7 @@ def handle_recruiter_questions(question, api_key):
     """
     try:
         # Get or create vector store
-        vector_store = _get_or_create_vector_store()
+        vector_store = _get_or_create_vector_store(api_key)
         
         # Initialize Gemini LLM
         llm = ChatGoogleGenerativeAI(
@@ -154,15 +162,13 @@ def handle_recruiter_questions(question, api_key):
         # Get current date
         current_date = datetime.now().strftime("%B %d, %Y")
         
-        # Create custom prompt with current_date included
+        # Create retriever
+        retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+        
+        # Create prompt template (combining everything in one prompt since Gemini doesn't support system messages)
         prompt_template = """You are an AI assistant helping to answer questions about Ahlam Yusuf's professional background and CV.
 
 **Current Date for Reference:** {current_date}
-
-**Question:** {question}
-
-**Relevant CV Information:**
-{context}
 
 **Instructions:**
 - Provide a concise, informative, and friendly answer based on the CV information
@@ -177,36 +183,52 @@ def handle_recruiter_questions(question, api_key):
 **Example of how to handle off-topic questions (e.g., code):**
 "Wooooowww there buddy, that's out of my scope. Let's focus on the main show."
 
+**Question:** {question}
+
+**Relevant CV Information:**
+{context}
+
 **Begin your answer now:**
 """
         
-        # Format prompt with current_date
-        formatted_prompt_template = prompt_template.format(
-            current_date=current_date,
-            question="{question}",
-            context="{context}"
-        )
-        
         prompt = PromptTemplate(
-            template=formatted_prompt_template,
-            input_variables=["question", "context"]
+            template=prompt_template,
+            input_variables=["question", "context", "current_date"]
         )
         
-        # Create retrieval chain
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=llm,
-            chain_type="stuff",
-            retriever=vector_store.as_retriever(search_kwargs={"k": 3}),  # Get top 3 relevant chunks
-            chain_type_kwargs={"prompt": prompt},
-            return_source_documents=False
-        )
+        # Create the chain using LCEL (LangChain Expression Language)
+        def format_docs(docs):
+            return "\n\n".join(doc.page_content for doc in docs)
+        
+        def format_prompt_input(query):
+            docs = retriever.invoke(query)
+            context = format_docs(docs)
+            return {
+                "question": query,
+                "context": context,
+                "current_date": current_date
+            }
+        
+        # Create the chain - convert prompt to chat message, then pass to LLM
+        def invoke_llm(inputs):
+            formatted_prompt = prompt.format(**inputs)
+            message = HumanMessage(content=formatted_prompt)
+            response = llm.invoke([message])
+            # Extract content from the response
+            if hasattr(response, 'content'):
+                return response.content
+            elif hasattr(response, 'text'):
+                return response.text
+            else:
+                return str(response)
+        
+        # Create the chain
+        chain = RunnablePassthrough() | format_prompt_input | invoke_llm
         
         # Generate answer
-        result = qa_chain.invoke({"query": question})
+        answer = chain.invoke(question)
         
-        answer = result.get("result", "I'm sorry, I do not know what you're talking about buddy.")
-        
-        return answer
+        return answer if answer else "I'm sorry, I do not know what you're talking about buddy."
         
     except Exception as e:
         return f"Oops 404 {str(e)}. Do you mind rephrasing that for me, I lost you there buddy."
