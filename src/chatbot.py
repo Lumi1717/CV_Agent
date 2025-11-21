@@ -4,6 +4,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.schema import Document
 from .cv_data import load_cv_data
 from dotenv import load_dotenv
