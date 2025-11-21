@@ -17,12 +17,96 @@ load_dotenv()
 # Global vector store (initialized once)
 _vector_store = None
 
+def _parse_date(date_str):
+    """
+    Parse date string in various formats: "YYYY-MM-DD", "Month YYYY", or "MM/YYYY"
+    
+    Args:
+        date_str (str): Date string to parse
+    
+    Returns:
+        datetime: Parsed datetime object
+    """
+    if not date_str:
+        raise ValueError("Empty date string")
+    
+    date_str = date_str.strip()
+    
+    # Try "YYYY-MM-DD" format first
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        pass
+    
+    # Try "Month YYYY" format (e.g., "May 2023")
+    month_names = {
+        "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+        "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12,
+        "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+        "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12
+    }
+    
+    parts = date_str.lower().split()
+    if len(parts) == 2:
+        month_str, year_str = parts
+        if month_str in month_names and year_str.isdigit():
+            try:
+                return datetime(int(year_str), month_names[month_str], 1)
+            except ValueError:
+                pass
+    
+    # Try "MM/YYYY" format
+    if "/" in date_str:
+        try:
+            parts = date_str.split("/")
+            if len(parts) == 2:
+                month, year = int(parts[0]), int(parts[1])
+                return datetime(year, month, 1)
+        except (ValueError, IndexError):
+            pass
+    
+    # If all else fails, raise an error
+    raise ValueError(f"Unable to parse date: {date_str}")
+
+def _merge_overlapping_ranges(ranges):
+    """
+    Merge overlapping date ranges together.
+    
+    Args:
+        ranges (list): List of tuples (start_date, end_date) where dates are datetime objects
+    
+    Returns:
+        list: List of merged non-overlapping ranges
+    """
+    if not ranges:
+        return []
+    
+    # Sort ranges by start date
+    sorted_ranges = sorted(ranges, key=lambda x: x[0])
+    
+    merged = [sorted_ranges[0]]
+    
+    for current_start, current_end in sorted_ranges[1:]:
+        last_start, last_end = merged[-1]
+        
+        # Check if current range overlaps with the last merged range
+        # Overlaps if current_start <= last_end (touching or overlapping)
+        if current_start <= last_end:
+            # Merge: extend the end date if current_end is later
+            merged[-1] = (last_start, max(last_end, current_end))
+        else:
+            # No overlap, add as new range
+            merged.append((current_start, current_end))
+    
+    return merged
+
 def calculate_total_experience(experience_list):
     """
     Calculate the total professional experience from a list of experience entries.
-    Assumes experience_list is a list of dictionaries, each with 'start_date' and 'end_date' keys.
-    'start_date' and 'end_date' are expected in 'YYYY-MM-DD' format.
-    If 'end_date' is 'Present', it uses the current date.
+    Handles both 'dates.start'/'dates.end' format and 'start_date'/'end_date' format.
+    Dates can be in 'YYYY-MM-DD' format or 'Month YYYY' format.
+    If 'end_date' or 'dates.end' is 'Present', it uses the current date.
+    Overlapping date ranges are merged together to avoid double-counting.
     
     Args:
         experience_list (list): A list of dictionaries, each representing an experience entry.
@@ -30,34 +114,46 @@ def calculate_total_experience(experience_list):
     Returns:
         str: A formatted string representing the total experience (e.g., "5 years and 3 months").
     """
-    total_months = 0
+    date_ranges = []
     
+    # Collect all date ranges
     for job in experience_list:
-        start_date_str = job.get("start_date")
-        end_date_str = job.get("end_date")
+        # Try to get dates from either format
+        dates_obj = job.get("dates", {})
+        start_date_str = dates_obj.get("start") if dates_obj else job.get("start_date")
+        end_date_str = dates_obj.get("end") if dates_obj else job.get("end_date")
 
         if not start_date_str:
             continue
 
         try:
-            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            # Parse date - handles both "YYYY-MM-DD" and "Month YYYY" formats
+            start_date = _parse_date(start_date_str)
             
             if end_date_str and end_date_str.lower() == "present":
                 end_date = datetime.now()
             elif end_date_str:
-                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+                end_date = _parse_date(end_date_str)
             else:
                 continue # Skip if no end date and not 'Present'
 
-            # Calculate months difference
-            delta = end_date - start_date
-            months_diff = delta.days / 30.44 # Average days in a month
-            total_months += months_diff
+            # Store the date range
+            date_ranges.append((start_date, end_date))
 
-        except ValueError:
+        except (ValueError, TypeError) as e:
             # Handle cases where date format might be incorrect
-            print(f"Warning: Could not parse date for job: {job}")
+            print(f"Warning: Could not parse date for job: {job.get('company', 'Unknown')} - {e}")
             continue
+    
+    # Merge overlapping ranges
+    merged_ranges = _merge_overlapping_ranges(date_ranges)
+    
+    # Calculate total months from merged ranges
+    total_months = 0
+    for start_date, end_date in merged_ranges:
+        delta = end_date - start_date
+        months_diff = delta.days / 30.44  # Average days in a month
+        total_months += months_diff
             
     years = int(total_months // 12)
     months = int(total_months % 12)
@@ -162,8 +258,8 @@ def handle_recruiter_questions(question, api_key):
         # Get current date
         current_date = datetime.now().strftime("%B %d, %Y")
         
-        # Create retriever
-        retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+        # Create retriever - get more chunks for better context
+        retriever = vector_store.as_retriever(search_kwargs={"k": 5})
         
         # Create prompt template (combining everything in one prompt since Gemini doesn't support system messages)
         prompt_template = """You are an AI assistant helping to answer questions about Ahlam Yusuf's professional background and CV.
@@ -179,6 +275,8 @@ def handle_recruiter_questions(question, api_key):
 - If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
 - Focus on being helpful and accurate
 - Use specific details from the CV when possible
+- When asked about current employment or "where is she working now", look for positions with "Present" or "end": "Present" in the dates
+- Be specific about company names, positions, and dates when available
 
 **Example of how to handle off-topic questions (e.g., code):**
 "Wooooowww there buddy, that's out of my scope. Let's focus on the main show."

@@ -36,6 +36,7 @@ def test_api():
     
     # Test ask endpoint with sample questions
     test_questions = [
+        "How many years of experience does Ahlam have?",
         "What are Ahlam's top skills?",
         "Tell me about her work experience at Omantel",
         "What education does she have?",
