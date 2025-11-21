@@ -2,7 +2,7 @@ Flask==2.3.3
 Flask-Cors==4.0.0
 gunicorn==21.2.0
 python-dotenv==1.0.0
-langchain==0.1.0
+langchain==0.0.354
 langchain-community==0.0.38
 langchain-core==0.1.53
 langchain-google-genai==0.0.11
