@@ -20,8 +20,6 @@ def ask_question():
         api_key = os.getenv('GEMINI_API_KEY')
         DEFAULT_PLACEHOLDER = "your-default-key-here" 
         if not api_key or api_key == DEFAULT_PLACEHOLDER:
-            print('test',os.getenv('GEMINI_API_KEY'))
-            print('twow',api_key)
             return jsonify({
                 "error": "Gemini API key not configured. Please set GEMINI_API_KEY in your .env file."
             }), 500

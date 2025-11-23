@@ -37,6 +37,7 @@ def test_api():
     # Test ask endpoint with sample questions
     test_questions = [
         "How many years of experience does Ahlam have?",
+        "Where does she work right now ?",
         "What are Ahlam's top skills?",
         "Tell me about her work experience at Omantel",
         "What education does she have?",
@@ -63,8 +64,8 @@ def test_api():
                     print("   ✅ Success")
                     answer = result.get("answer", "")
                     # Print first 100 characters of answer
-                    preview = answer[:100] + "..." if len(answer) > 100 else answer
-                    print(f"   Answer preview: {preview}")
+                    # preview = answer[:100] + "..." if len(answer) > 100 else answer
+                    print(f"   Answer preview: {answer}")
                 else:
                     print(f"   ❌ API returned error: {result.get('error', 'Unknown error')}")
             else:
