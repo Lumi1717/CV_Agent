@@ -194,7 +194,7 @@ RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 8080
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "src.api:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "wsgi:app"]
 ```
 
 ## Project Structure
