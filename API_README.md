@@ -180,7 +180,7 @@ python wsgi.py
 
 ### Production (using Gunicorn)
 ```bash
-gunicorn -w 4 -b 0.0.0.0:8080 src.api:app
+gunicorn -w 4 -b 0.0.0.0:8080 wsgi:app
 ```
 
 ### Docker Deployment
@@ -200,7 +200,7 @@ CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "src.api:app"]
 ## Project Structure
 
 ```
-├── src/
+├── app/
 │   ├── api.py              # Flask API endpoints
 │   ├── chatbot.py          # AI processing logic
 │   ├── cv_data.py          # CV data loading utilities
