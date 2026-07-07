@@ -34,7 +34,11 @@
       "Member of the Student Council",
       "World Summit AI Qatar Ambassador",
       "Cursor AI Ambassador",
-      "Marimo Ambassador",
+      "Marimo Ambassador"
+    ],
+    "achievements": [
+      "Achieved a 90% accuracy in sentiment analysis and polysemy resolution using BERT.",
+      "Achieved a 90% accuracy in text recognition using CRNN.",
       "Awarded full-ride scholarship by PDO to attain her Masters in Data Science",
       "Awarded full-ride scholarship by the ministry of education to attain her Bachelors in Computer Science"
     ],
@@ -52,7 +56,7 @@
             "end": "Present"
         },
         "location": "Muscat, Masqaţ, Oman",
-        "achievements": [
+        "responsibilities": [
           "Orchestrated the seamless and efficient operation of all IT BSS UI applications, following standard operational procedures.", 
           "Proactively restored incidents impacting or degrading services through applications, minimizing downtime, and maintaining peak application services availability.", 
           "Collaborated closely with managed service and partner teams to swiftly address and resolve issues, contributing to a robust and resilient IT infrastructure.", 

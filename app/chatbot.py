@@ -1,21 +1,44 @@
 import json
 import os
-from langchain_community.vectorstores import FAISS
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+import logging
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 from .cv_data import load_cv_data
+from .retrieval import build_retriever
 from dotenv import load_dotenv
 from datetime import datetime
+# from google.genai import Client, types, Chat
 
 
 load_dotenv()
 
 # Global vector store (initialized once)
 _vector_store = None
+logger = logging.getLogger(__name__)
+
+FRIENDLY_API_ERROR_MESSAGE = (
+    "Sorry due to high volumn of request the server is expirencing ✨issues✨"
+)
+
+
+# def get_or_create_chat_session(client: client, sessions_store:dict, session_id: str, model_name:str) -> ChatSession:
+#     """ 
+#     get session or create a new one
+#     """
+#     if session_id in sessions_store:
+#         return sessions_store[session_id]
+#     else:
+#         system_instruction = (
+#             "You are a helpful and professional CV RAG agent. "
+#             "Your purpose is to answer recruiter questions based on the provided documents. "
+#             "Maintain context from previous turns in this conversation."
+#         )
+#     sessions_store[session_id] = new_chat
+#     return new_chat
 
 def _parse_date(date_str):
     """
@@ -170,14 +193,12 @@ def calculate_total_experience(experience_list):
 
 def _create_vector_store(cv_data, api_key):
     """
-    Create a FAISS vector store from CV data
+    Create an in-memory retriever from CV data (no external embeddings).
     
     Args:
         cv_data (dict): The CV data dictionary
-        api_key (str): Google API key for embeddings
-    
     Returns:
-        FAISS: Vector store instance
+        dict: { "documents": [...], "retriever": retriever }
     """
     # Convert CV data into documents
     documents = []
@@ -237,6 +258,7 @@ def _create_vector_store(cv_data, api_key):
                 job_text += f"Period: {start_date} to {end_date}\n"
                 job_text += f"Location: {job.get('location', 'N/A')}\n\n"
                 
+                # Back-compat: some older CV schemas used `achievements` per job.
                 if job.get("achievements"):
                     job_text += "Achievements:\n"
                     for achievement in job.get("achievements", []):
@@ -273,16 +295,8 @@ def _create_vector_store(cv_data, api_key):
             )
             documents.append(doc)
     
-    # Use Google Generative AI embeddings
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
-        google_api_key=api_key
-    )
-    
-    # Create FAISS vector store
-    vector_store = FAISS.from_documents(documents, embeddings)
-    
-    return vector_store
+    retriever = build_retriever(documents)
+    return {"documents": documents, "retriever": retriever}
 
 
 def _get_or_create_vector_store(api_key):
@@ -293,7 +307,7 @@ def _get_or_create_vector_store(api_key):
         api_key (str): Google API key for embeddings
     
     Returns:
-        FAISS: Vector store instance
+        dict: { "documents": [...], "retriever": retriever }
     """
     global _vector_store
     
@@ -305,8 +319,10 @@ def _get_or_create_vector_store(api_key):
     
     return _vector_store
 
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
 
-def handle_recruiter_questions(question, api_key):
+def handle_recruiter_questions(question: str, api_key:str ) -> str:
     """
     Handle recruiter questions about the candidate's CV using LangChain and vector search
     
@@ -318,7 +334,7 @@ def handle_recruiter_questions(question, api_key):
         str: The answer to the question
     """
     try:
-        # Get or create vector store
+        # Get or create local retriever store
         vector_store = _get_or_create_vector_store(api_key)
         
         # Initialize Gemini LLM
@@ -331,39 +347,38 @@ def handle_recruiter_questions(question, api_key):
         # Get current date
         current_date = datetime.now().strftime("%B %d, %Y")
         
-        # Create retriever - get more chunks for better context, with metadata filter if needed
-        retriever = vector_store.as_retriever(search_kwargs={"k": 7})
+        retriever = vector_store["retriever"]
         
         # Create prompt template (combining everything in one prompt since Gemini doesn't support system messages)
         prompt_template = """You are an AI assistant helping to answer questions about Ahlam Yusuf's professional background and CV.
 
-**Current Date for Reference:** {current_date}
+    **Current Date for Reference:** {current_date}
 
-**IMPORTANT INSTRUCTIONS FOR CURRENT EMPLOYMENT QUESTIONS:**
-- When asked about "where is she working now", "current employment", "where does she work", or similar questions:
-  - Look for entries marked as "CURRENT EMPLOYMENT" or jobs with "Present" in the dates
-  - The CV information below contains current employment details - find them and list all current positions
-  - If you see "end": "Present" or "Period: X to Present", that means it's a current position
-  - List ALL current companies and positions - someone can work at multiple places simultaneously
+    **IMPORTANT INSTRUCTIONS FOR CURRENT EMPLOYMENT QUESTIONS:**
+    - When asked about "where is she working now", "current employment", "where does she work", or similar questions:
+    - Look for entries marked as "CURRENT EMPLOYMENT" or jobs with "Present" in the dates
+    - The CV information below contains current employment details - find them and list all current positions
+    - If you see "end": "Present" or "Period: X to Present", that means it's a current position
+    - List ALL current companies and positions - someone can work at multiple places simultaneously
 
-**General Instructions:**
-        - Provide a concise, informative, and friendly answer based on the CV information
-        - Keep your tone conversational and human-like, as if talking to a friend
-        - Use a natural tone relevant to the topic and add a little gen z slang to make it more friendly and approachable
-- Make it professional but with a joke here and there
-        - Only answer based on the information provided in the CV
-        - If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
-        - Focus on being helpful and accurate
-        - Use specific details from the CV when possible
-- Be specific about company names, positions, and dates when available
+    **General Instructions:**
+            - Provide a concise, informative, and friendly answer based on the CV information
+            - Keep your tone conversational and human-like, as if talking to a friend
+            - Use a natural tone relevant to the topic and add a little gen z slang to make it more friendly and approachable
+    - Make it professional but with a joke here and there
+            - Only answer based on the information provided in the CV
+            - If the question asks for information not in the CV, respond with "I don't have that information in Ahlam's CV"
+            - Focus on being helpful and accurate
+            - Use specific details from the CV when possible
+    - Be specific about company names, positions, and dates when available
 
-        **Example of how to handle off-topic questions (e.g., code):**
-"Wooooowww there buddy, that's out of my scope. Let's focus on the main show."
+            **Example of how to handle off-topic questions (e.g., code):**
+    "Wooooowww there buddy, that's out of my scope. Let's focus on the main show."
 
-**Question:** {question}
+    **Question:** {question}
 
-**Relevant CV Information:**
-{context}
+    **Relevant CV Information:**
+    {context}
 
         **Begin your answer now:**
         """
@@ -374,11 +389,9 @@ def handle_recruiter_questions(question, api_key):
         )
         
         # Create the chain using LCEL (LangChain Expression Language)
-        def format_docs(docs):
-            return "\n\n".join(doc.page_content for doc in docs)
-        
+
         def format_prompt_input(query):
-            docs = retriever.invoke(query)
+            docs = retriever.retrieve(query, k=7)
             context = format_docs(docs)
             return {
                 "question": query,
@@ -407,6 +420,7 @@ def handle_recruiter_questions(question, api_key):
         
         return answer if answer else "I'm sorry, I do not know what you're talking about buddy."
         
-    except Exception as e:
-        return f"Oops 404 {str(e)}. Do you mind rephrasing that for me, I lost you there buddy."
+    except Exception:
+        logger.exception("handle_recruiter_questions failed")
+        return FRIENDLY_API_ERROR_MESSAGE
 

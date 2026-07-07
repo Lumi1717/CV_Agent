@@ -4,19 +4,17 @@ from .chatbot import handle_recruiter_questions
 import os
 from dotenv import load_dotenv
 from pathlib import Path  # Add this import
+from .chatbot import FRIENDLY_API_ERROR_MESSAGE
 
 
-env_path = Path('.') / '.env'  # Looks for .env in current directory
+env_path = Path('.') / '.env' 
 load_dotenv(dotenv_path=env_path)
-
-
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app) 
 
 @app.route('/ask', methods=['GET', 'POST'])
 def ask_question():
     try:
-        # Check if Gemini API key is configured
         api_key = os.getenv('GEMINI_API_KEY')
         DEFAULT_PLACEHOLDER = "your-default-key-here" 
         if not api_key or api_key == DEFAULT_PLACEHOLDER:
@@ -37,8 +35,25 @@ def ask_question():
                 "error": "Question cannot be empty"
             }), 400
         
+        # session_id = data.get('session_id')
+        # if not session_id:
+        #     session_id = str(uuid.uuid4())
+
         # Process the question
         answer = handle_recruiter_questions(question=question, api_key=api_key)
+
+        # If the chatbot hit an internal error, return a friendly message
+        if answer == FRIENDLY_API_ERROR_MESSAGE:
+            return (
+                jsonify(
+                    {
+                        "answer": FRIENDLY_API_ERROR_MESSAGE,
+                        "message": FRIENDLY_API_ERROR_MESSAGE,
+                        "status": "error",
+                    }
+                ),
+                503,
+            )
         
         return jsonify({
             "answer": answer,
@@ -46,10 +61,17 @@ def ask_question():
         })
         
     except Exception as e:
-        return jsonify({
-            "error": f"An error occurred: {str(e)}",
-            "status": "error"
-        }), 500
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "answer": FRIENDLY_API_ERROR_MESSAGE,
+                    "message": FRIENDLY_API_ERROR_MESSAGE,
+                    "error": str(e),
+                }
+            ),
+            500,
+        )
 
 @app.route('/health', methods=['GET'])
 def health_check():
