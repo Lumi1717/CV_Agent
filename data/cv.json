@@ -49,6 +49,44 @@
     "summary": "With an MSc in Data Science from HARBOUR.SPACE and a foundation in Computer Science from the German University of Technology in Oman, my journey has led me to Omantel as a Business Support System Engineer. Here, my team and I ensure IT BSS UI applications run smoothly, leveraging my SQL expertise for data analysis that enhances system performance. Previously at PhazeRo, we crafted predictive models and harnessed machine learning algorithms for time series analysis, improving forecasting accuracy. Proficient in OCR and NLP, we transformed unstructured data into actionable insights, fostering informed decision-making across the organization.",
     "experience": [
       {
+        "company": "qafila.tech",
+        "position": "Co-Founder, Backend Developer",
+        "dates": {
+            "start": "February 2025",
+            "end": "Present"
+        },
+        "responsibilities": [
+          "Co-founded Qafila and owned the backend API for a logistics marketplace that connects customers and businesses with drivers for deliveries and moves.",
+          "Built the driver edit-request workflow so sensitive profile, document, and vehicle changes no longer go live on their own. Approved drivers could previously update their license, identity documents, and vehicle details and have those changes written straight onto the live driver and truck rows. Those fields decide whether a driver is allowed to work and which jobs they can take, so an unchecked edit could put an unverified license, an expired insurance card, or the wrong truck type into the dispatch pool.",
+          "Save on those screens now submits a request. The live record stays as it is until an operator approves it. While a request is waiting, the form still shows the current live values, with a pending-approval state. A driver may have only one pending request per kind (profile, documents, or vehicle) at a time.",
+          "Drivers no longer patch those fields themselves. They submit a driver_edit_requests row: a kind, a JSON payload of the proposed fields, and a status of pending.",
+          "Driver GET /api/driver/edit-requests returns the driver’s own history, filterable by status and kind. Driver POST /api/driver/edit-requests submits { kind, payload }. Driver POST /api/driver/edit-requests/:id/cancel withdraws a request that is still pending. Driver routes accept a Redis bearer token or a SuperTokens session, then require user_type = driver and resolve that session to the driver’s own profile.",
+          "Admin GET /api/superuser/driver-edit-requests is the approval queue, pending by default. Admin POST /api/superuser/driver-edit-requests/:id/approve applies the payload, then marks it approved. Admin POST /api/superuser/driver-edit-requests/:id/reject records a reason and leaves the live row unchanged. Admin routes sit on the superuser router, which requires a SuperTokens session and the superuser role.",
+          "Approval runs in one database transaction. The handler copies only an allowlist of fields onto drivers (profile and documents) or onto that driver’s truck (vehicle). Extra keys in the JSON are dropped. An existing truck is updated only when truck_id belongs to that driver; otherwise a new truck is created when truck_type is present. Reject and cancel never touch the live rows.",
+          "A unique constraint on a pending (driver_id, kind) pair makes a second open request of the same kind fail. Prisma surfaces that as P2002, and the API returns 409 so the app can tell the driver to cancel the existing request first. Cancelling uses updateMany scoped to that driver and status = pending, so one driver cannot cancel another driver’s request, and an already decided request returns 409.",
+          "The API Prisma schema stores kind and order status as strings, so the generated client does not export those enums. apps/api/src/lib/prismaEnums.ts holds the same values as runtime constants so the routes stay typed without depending on a second schema’s generated enums.",
+          "The same service also covers orders, payments (Paymob), maps, uploads (Cloudflare R2 via the S3 API), push (OneSignal), and driver earnings. The edit-request flow is one route group inside that API.",
+          "Owned the contract between the driver app and the operator dashboard: authentication, authorization, validation, and the write that actually changes a driver. That means deciding who may submit, cancel, approve, or reject; keeping proposed data in payload until an admin acts; applying only known fields; and making one pending request per kind a database rule rather than a check the client can skip. The same role covers trucker access, KYC, the order lifecycle, and the admin queue that surfaces pending edit requests next to unverified drivers and open incidents."
+        ],
+        "skills": [
+          "Node.js",
+          "Express",
+          "TypeScript",
+          "Prisma",
+          "PostgreSQL",
+          "SuperTokens",
+          "Redis",
+          "Helmet",
+          "CORS",
+          "express-rate-limit",
+          "Paymob",
+          "Cloudflare R2",
+          "OneSignal",
+          "API Design",
+          "Authentication and Authorization"
+        ]
+      },
+      {
         "company": "Omantel",
         "position": "Business Support System Engineer (Data Engineer)",
         "dates": {
