@@ -6,15 +6,15 @@
       "github": "https://github.com/Lumi1717"
     },
     "top_skills": [
-      "Machine Learning",
-      "Data Analysis",
-      "Deep Learning",
-      "Problem resolution",
-      "Statistical Data Analysis",
-      "Prophet",
-      "ARIMA",
       "Python",
-      "SQL"
+      "SQL",
+      "Machine Learning",
+      "Computer Vision",
+      "LLMs",
+      "RAG",
+      "Data Engineering",
+      "Incident Management",
+      "Technical Leadership"
     ],
     "languages": {
       "English": "Native",
@@ -37,7 +37,8 @@
       "Marimo Ambassador"
     ],
     "achievements": [
-      "Achieved a 90% accuracy in sentiment analysis and polysemy resolution using BERT.",
+      "Achieved 85% accuracy in sentiment analysis and polysemy resolution using BERT.",
+      "Achieved 95% accuracy in object detection using Darknet YOLO.",
       "Achieved a 90% accuracy in text recognition using CRNN.",
       "Awarded full-ride scholarship by PDO to attain her Masters in Data Science",
       "Awarded full-ride scholarship by the ministry of education to attain her Bachelors in Computer Science"
@@ -46,7 +47,7 @@
     "Automatic License Plate Reader",
     "Dynamic Traffic Lights for Cognitive Cities (Computer Vision Research)"
   ],
-    "summary": "With an MSc in Data Science from HARBOUR.SPACE and a foundation in Computer Science from the German University of Technology in Oman, my journey has led me to Omantel as a Business Support System Engineer. Here, my team and I ensure IT BSS UI applications run smoothly, leveraging my SQL expertise for data analysis that enhances system performance. Previously at PhazeRo, we crafted predictive models and harnessed machine learning algorithms for time series analysis, improving forecasting accuracy. Proficient in OCR and NLP, we transformed unstructured data into actionable insights, fostering informed decision-making across the organization.",
+    "summary": "Co-founder and backend developer at qafila.tech. At Omantel in Muscat, promoted in April 2026 from L2 Operations Engineer / Data Engineer to Technical Operations & Engineering Lead, after architecting OpenShift security-log pipelines and automating ETL. Data Scientist / AI Engineer at tipl.io from November 2022 to June 2025, building RAG systems with the Gemini API and LangChain and computer vision models in TensorFlow. Earlier, Data Scientist at PhazeRo, with Darknet YOLO at 95% accuracy, CRNN text extraction at 90%, and BERT sentiment analysis and polysemy resolution at 85%. MSc in Data Science from HARBOUR.SPACE and a BSc in Computer Science from the German University of Technology in Oman.",
     "experience": [
       {
         "company": "qafila.tech",
@@ -88,94 +89,100 @@
       },
       {
         "company": "Omantel",
-        "position": "Business Support System Engineer (Data Engineer)",
+        "position": "Technical Operations & Engineering Lead",
         "dates": {
-            "start": "May 2023",
+            "start": "April 2026",
             "end": "Present"
         },
-        "location": "Muscat, Masqaţ, Oman",
+        "location": "Muscat, Oman",
         "responsibilities": [
-          "Orchestrated the seamless and efficient operation of all IT BSS UI applications, following standard operational procedures.", 
-          "Proactively restored incidents impacting or degrading services through applications, minimizing downtime, and maintaining peak application services availability.", 
-          "Collaborated closely with managed service and partner teams to swiftly address and resolve issues, contributing to a robust and resilient IT infrastructure.", 
-          "Leveraged SQL proficiency for in-depth data analysis, extracting valuable insights to enhance system performance and optimize processes.", 
-          "Applied expertise in OpenShift for efficient deployment and management of applications, ensuring scalability and flexibility.", 
-          "Utilized Big Data tools for comprehensive analysis, providing strategic recommendations based on data-driven insights.", 
-          "Implemented CI/CD pipelines, streamlining the development and deployment process for enhanced agility and reliability.", 
-          "Provided team leads with regular updates, showcasing analytical thinking, logical problem-solving, and transparent communication." 
+          "Promoted in April 2026 from L2 Operations Engineer to L1 Team Lead, overseeing tier-one operations and team performance.",
+          "Cut L1-to-L2 ticket escalations by 10% in the first three months through knowledge sharing.",
+          "Drove technical and process changes that improved system workflow by 3%, tracked via escalation reductions."
         ],
         "skills": [
-          "IT Operations Management", 
-          "Incident Response and Resolution", 
-          "Application Services Availability", 
-          "Collaboration with Managed Service Teams", 
-          "SQL for Data Analysis", 
-          "OpenShift Deployment and Management", 
-          "Big Data Analysis", 
-          "PL/SQL", 
-          "API Development", 
-          "CI/CD Pipeline Implementation", 
-          "Analytical Thinking", 
-          "Logical Problem Solving", 
-          "Transparent Communication", 
-          "Operational Procedure Adherence" 
+          "Technical Leadership",
+          "Incident Management",
+          "Team Performance"
+        ]
+      },
+      {
+        "company": "Omantel",
+        "position": "L2 Operations Engineer / Data Engineer",
+        "dates": {
+            "start": "May 2023",
+            "end": "April 2026"
+        },
+        "location": "Muscat, Oman",
+        "responsibilities": [
+          "Architected OpenShift data pipelines to monitor security logs, with real-time anomaly detection and a 40% reliability improvement.",
+          "Optimized vector-ready data flows, cutting pipeline latency by 20%, and automated ETL to cut manual effort by 30% in production."
+        ],
+        "skills": [
+          "OpenShift",
+          "ETL",
+          "Data Pipelines",
+          "Incident Management"
         ]
       },
       {
         "company": "tipl.io",
-        "position": "Engineer",
+        "position": "Data Scientist / AI Engineer",
         "dates": {
             "start": "November 2022",
-            "end": "Present"
+            "end": "June 2025"
         },
         "responsibilities": [
-          "Model Development: Crafting, fine-tuning, and deploying ML models, particularly focusing on Support Vector Machines (SVM) and Computer Vision algorithms, to tackle diverse business challenges effectively.",
-           "Data Preprocessing: Collaborating with data engineers and domain experts to ensure pristine data quality and integrity using Pandas and NumPy, laying a solid foundation for model training.",          
-            "Feature Engineering: Identifying key features and optimizing them to enhance model performance and predictive accuracy, leveraging my expertise in Pandas and NumPy.", 
-            "Model Training and Evaluation: Implementing SVM and other ML algorithms, meticulously evaluating model performance using Matplotlib for visualization, and iterating for continuous improvement.",
-            "Hyperparameter Tuning: Fine-tuning model hyperparameters using advanced techniques like grid search and Bayesian optimization for optimal performance, utilizing my expertise in Python.",
-            "Computer Vision: Applying cutting-edge Computer Vision techniques to extract meaningful insights from visual data, enhancing decision-making processes and automating tasks.", 
-            "Integration and Deployment: Collaborating with software engineers to seamlessly integrate ML models into production systems, leveraging my experience with Raspberry Pi and Arduino for IoT applications.",
-            "Continuous Monitoring and Maintenance: Implementing robust monitoring solutions to track model performance in real-time and addressing issues promptly for sustained effectiveness.",
-            "Stay Current with Industry Trends: Keeping abreast of the latest advancements in ML, Computer Vision, and related technologies to leverage the best solutions for organizational needs.",
-            "Collaboration and Communication: Working closely with cross-functional teams to understand requirements, communicate findings, and drive the adoption of ML and Computer Vision solutions." 
-           
+          "Built RAG architectures with the Gemini API and LangChain for real-time semantic Q&A on live web sessions.",
+          "Trained multimodal vision models (ResNet, AlexNet) in TensorFlow and improved accuracy by 25% on high-fidelity image analysis.",
+          "Led fraud detection by aggregating user activity into ETL jobs and working with security teams on patterns and risk."
+        ],
+        "skills": [
+          "Gemini API",
+          "LangChain",
+          "RAG",
+          "TensorFlow",
+          "ResNet",
+          "AlexNet",
+          "Computer Vision",
+          "ETL"
         ]
       },
       {
         "company": "ZabonEx",
-        "position": "Data Scientist",
+        "position": "Time Series Forecasting Engineer",
         "dates": {
-        "start": "May 2023",
-        "end": "August 2023"
-      },
+            "start": "May 2023",
+            "end": "August 2023"
+        },
         "responsibilities": [
-          "Translated business objectives into structured data science problems." ,
-         " Demonstrated expert proficiency in multivariate time series forecasting and causal forecasting." ,
-          "Conducted comprehensive data exploration and communicated insights effectively to both technical and non-technical stakeholders." ,
-          "Analyzed experimental results, iterated, and refined models to drive significant business impact.",
-          "Possessed in-depth understanding of classical statistical forecasting algorithms (e.g., ARIMA, ETS) and modern algorithms (e.g., Prophet)." ,
-          "Applied practical knowledge of sequence models in deep learning (e.g., LSTMs, Transformers) with a focus on time series forecasting." 
-          ]
+          "Designed multivariate LSTM models on longitudinal waste-management data, improving forecast accuracy and operational efficiency.",
+          "Processed large-scale time series with Spark pipelines and improved processing efficiency by 30%."
+        ],
+        "skills": [
+          "LSTM",
+          "Time Series Forecasting",
+          "Apache Spark"
+        ]
       },
       {
         "company": "PhazeRo",
         "position": "Data Scientist",
         "dates": {
-        "start": "November 2021",
-        "end": "July 2023 "
-      },
+            "start": "November 2021",
+            "end": "May 2023"
+        },
         "responsibilities": [
-          "Crafted advanced predictive models and machine learning algorithms, utilizing state-of-the-art statistical techniques for precise insights.", 
-          "Specialized in time series analysis, enhancing forecasting accuracy and enabling informed decision-making.",
-          "Developed expertise in Optical Character Recognition (OCR), transforming unstructured data into valuable insights.", 
-          "Proficient in Natural Language Processing (NLP), extracting meaning and insights from textual data.",
-          "Incorporated CRNN (Convolutional Recurrent Neural Network) for robust text recognition, enhancing OCR capabilities with 90% text extraction accuracy.",
-          "Orchestrated seamless collaboration with cross-functional teams, partnering with project managers and business stakeholders to implement data-driven solutions for complex challenges.", 
-          "Proficient in deploying data science models using Docker, ensuring seamless integration and scalability across diverse environments.",
-          "Actively curated insightful content for the development of aspiring data scientists, fostering a culture of continuous learning and innovation.",
-          "Used BERT to achieve 85% accuracy in sentiment analysis and polysemy resolution."
-      
+          "Shipped computer vision with Darknet YOLO at 95% accuracy and CRNN text extraction at 90% in dynamic environments.",
+          "Used BERT for sentiment analysis and polysemy resolution at 85% accuracy.",
+          "Designed data models of user interactions for security analytics and data governance."
+        ],
+        "skills": [
+          "Darknet YOLO",
+          "CRNN",
+          "BERT",
+          "Computer Vision",
+          "NLP"
         ]
       },
       {
